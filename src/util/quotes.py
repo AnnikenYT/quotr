@@ -1,7 +1,7 @@
 import discord
-from db import Guild, Quote
-from regexes import extractQuote
-from logger import logger
+from util.db import Guild, Quote
+from util.regexes import extractQuote
+from util.logger import logger
 import asyncio
 
 async def process_message(message: discord.Message):
@@ -38,8 +38,6 @@ async def process_message(message: discord.Message):
         await message.add_reaction('❌')
         await asyncio.sleep(5)
         await message.remove_reaction('❌', message.guild.me)
-        
-    
 
 async def processChannelMessages(channel: discord.TextChannel, limit = 500):
     # get the guild from the database
@@ -54,7 +52,6 @@ async def processChannelMessages(channel: discord.TextChannel, limit = 500):
             if processed_count >= 500:
                 break
         await asyncio.sleep(0.5)  # to avoid hitting the rate limit
-    
 
 async def clearQuotes(channel: discord.TextChannel, guild: int, botuser: discord.User):
     quotes = Quote.select().where(Quote.guildid == guild, Quote.messageid != None)
