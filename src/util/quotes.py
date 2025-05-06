@@ -16,12 +16,18 @@ async def process_message(message: discord.Message):
     except discord.NotFound:
         pass
     
-    # extract the quote and author from the message
-    quote, author = extractQuote(message.content)
     
-    if quote and author:
+    existing_quote = Quote.get_or_none(Quote.messageid == message.id)
+    
+    logger.info(f'Existing quote: {existing_quote}')
+    
+    logger.info(f'Message content: {message.content}')
+    # extract the quote and author from the message
+    matches = extractQuote(message.content)
+    if matches:
+        quote = matches[0]
+        author = matches[1] if len(matches) > 1 else None
         # check if the quote already exists in the database
-        existing_quote = Quote.get_or_none(Quote.messageid == message.id)
         if not existing_quote:
             # create a new quote entry in the database
             Quote.create(guildid=message.guild.id, messageid=message.id, content=quote, author=author)
@@ -32,6 +38,9 @@ async def process_message(message: discord.Message):
         await message.remove_reaction('🔁', message.guild.me)
         await message.add_reaction('✅')
     else:
+        if existing_quote:
+            existing_quote.delete_instance()
+            logger.info(f'Quote deleted: {message.id}')
         logger.info(f'No quote found in message: {message.id}')
         await message.remove_reaction('🔁', message.guild.me)
         # add x emoji to the message and remove it after 5 seconds

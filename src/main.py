@@ -13,6 +13,7 @@ load_dotenv() # load all the variables from the env file
 intends = discord.Intents.default() # create the intents object
 intends.reactions = True # enable the reactions intent
 intends.messages = True # enable the messages intent
+intends.message_content = True # enable the message content intent
 bot = discord.Bot(intends=intends) # create the bot object
 
 guild_ids = [int(guildid) for guildid in os.getenv('GUILD_IDS').split(',')] # get the guild ids from the env file
@@ -63,6 +64,10 @@ async def on_message(message: discord.Message):
         return
     guild, _ = Guild.get_or_create(guildid=message.guild.id)
     if message.channel.id != guild.quoteChannel:
+        return
+    message = await message.channel.fetch_message(message.id)
+    if message is None:
+        logger.error(f'Message not found: {message.id} - {message.channel.name} - {message.channel.id}')
         return
     await process_message(message)
 

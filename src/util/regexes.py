@@ -62,3 +62,11 @@ def extractQuote(message, customRegex=None, customReverse=False):
         return last_quote, last_author
 
     return None
+
+if __name__ == "__main__":
+    # Example usage
+    message = """
+"Da haste mich geghosted" - Nina
+"Ich persönlich halte das für eine Lüge" - Toa"""
+    quote, author = extractQuote(message)
+    print(f'Quote: {quote}, Author: {author}')
