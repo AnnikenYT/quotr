@@ -1,5 +1,4 @@
 import re
-from db import Guild
 
 # Standard Quote Formats
 # "<quote>" - <author>
@@ -7,9 +6,9 @@ from db import Guild
 # "<quote>" <author>
 
 regexes = [
-    (r'\"(.+?)\"\s-\s(.+)', lambda match: (match.group(1), match.group(2))),  # "<quote>" - <author>
-    (r'(.+):\s\"?(.+)\"?', lambda match: (match.group(2), match.group(1))),   # <author>: <quote> (swapped groups)
     (r'\"(.+)\"\s(.+)', lambda match: (match.group(1), match.group(2))),      # "<quote>" <author>
+    (r'(.+):\s\"?(.+)\"?', lambda match: (match.group(2), match.group(1))),   # <author>: <quote> (swapped groups)
+    (r'\"(.+?)\"\s-\s(.+)', lambda match: (match.group(1), match.group(2))),  # "<quote>" - <author>
 ]
 
 def addRegex(pattern, groupHandler):
@@ -54,7 +53,9 @@ def extractQuote(message, customRegex=None, customReverse=False):
             # Combine all preceding content with the last quote
             preceding_content = message[:last_match.start()].strip()
             if preceding_content:
-                last_quote = f"{preceding_content}\n\n\"{last_quote}\" - ?".strip()
+                last_quote = f'{preceding_content}\n"{last_quote}"'
+            else:
+                last_quote = f'"{last_quote}"'
             break
 
     if last_quote and last_author:

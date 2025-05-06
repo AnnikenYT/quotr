@@ -1,7 +1,16 @@
 from peewee import *
-from playhouse.migrate import SqliteMigrator, migrate
+from dotenv import load_dotenv
+import os
 
-db = SqliteDatabase('data/database.db')
+load_dotenv()
+
+db = MySQLDatabase(
+    'quotr_bot',
+    user=os.getenv("MYSQL_USER"),
+    password=os.getenv("MYSQL_PASSWORD"),
+    host=os.getenv("MYSQL_HOST"),
+    port=3306,
+)
 
 class Guild(Model):
     guildid = IntegerField(primary_key=True)
@@ -26,10 +35,3 @@ class Quote(Model):
     
 db.connect()
 db.create_tables([Guild, Quote], safe=True)
-
-# Migrate the quotesProcesedUntil field to a DateTimeField
-migrator = SqliteMigrator(db)
-migrate(
-    migrator.drop_column('guilds', 'quotesProcessedUntil'),
-    migrator.add_column('guilds', 'quotesProcessedUntil', DateTimeField(default=0))
-)

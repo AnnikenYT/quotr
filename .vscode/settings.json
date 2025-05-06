@@ -1,11 +1,6 @@
 {
-    "sqltools.useNodeRuntime": true,
-    "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "driver": "SQLite",
-            "name": "Bot DB",
-            "database": "data/database.db"
-        }
-    ]
+    "workbench.editorAssociations": {
+        "*.copilotmd": "vscode.markdown.preview.editor",
+        "*.svg": "default"
+    }
 }
